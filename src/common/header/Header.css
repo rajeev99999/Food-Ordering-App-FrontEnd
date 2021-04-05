@@ -1,0 +1,12 @@
+.app-header{
+    display: flex;
+    background-color:rgb(37, 50,56);
+    padding: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo{
+    padding-left: 10px;
+    align-self: center;
+}
