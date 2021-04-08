@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Details from './screens/details/Details';
 import './index.css';
 import * as serviceWorker from './serviceWorker';
 import Header from './common/header/Header';
 
 ReactDOM.render(
-        <Header/> ,
+        <Details/> ,
     document.getElementById('root')
 );
 
