@@ -11,19 +11,19 @@ import './Details.css'
 
 const styles = (theme => ({
 
-    textRatingCost: { //Style for the Text of the Rating and cost.
+    textRatingCost: { 
         'text-overflow': 'clip',
         'width': '145px',
         'color': 'grey'
     },
-    restaurantName: { //Style for the Restaurant name.
+    restaurantName: { 
         'padding': '8px 0px 8px 0px',
         'font-size': '30px',
     },
-    restaurantCategory: { //Style for the Restaurant Category.
+    restaurantCategory: { 
         'padding': '8px 0px 8px 0px'
     }, 
-    avgCost: { //Style for the Average cost.
+    avgCost: { 
         'padding-left': '5px'
     },
 
@@ -42,9 +42,7 @@ class Details extends Component{
             badgeVisible:false,
         }
     }
-    //This method is called when the components are mounted.
-    //This method inturn calls the api get restaurant by id endpoints and updates the state with the relevant details.
-    //Then the page is re-rendered with the data received from the api. 
+     
     componentDidMount() {
         let data = null;
         let that = this;
