@@ -94,8 +94,7 @@ class Details extends Component {
             totalAmount:0,
             snackBarOpen: false,
             snackBarMessage: "",
-            transition: Fade,
-            badgeVisible:false,
+            transition: Fade
         }
     }
 
@@ -279,12 +278,7 @@ class Details extends Component {
     }
 
     //this method changes the visibility of badge when the modal is open in the details page.
-    changeBadgeVisibility = () => {
-        this.setState({
-            ...this.state,
-            badgeVisible:!this.state.badgeVisible,
-        })
-    }
+
 
 render() {
     // Styles are stored in the const classes
@@ -292,7 +286,7 @@ render() {
     return (
 
         <div>
-            <Header baseUrl={this.props.baseUrl} ></Header>
+            <Header baseUrl={this.props.baseUrl} showSearchBox={false} ></Header>
             {/* Restaurant Details Container */}
             <div className="restaurant-details-container">
                 <div>
@@ -352,7 +346,7 @@ render() {
                         <CardHeader
                             avatar={
                                 <Avatar aria-label="shopping-cart" className={classes.shoppingCart}>
-                                    <Badge badgeContent={this.state.cartItems.length} color="primary" showZero = {true} invisible={this.state.badgeVisible} className={classes.badge}>
+                                    <Badge badgeContent={this.state.cartItems.length} color="primary" showZero = {true}  className={classes.badge}>
                                         <ShoppingCartIcon />
                                     </Badge>
                                 </Avatar>
