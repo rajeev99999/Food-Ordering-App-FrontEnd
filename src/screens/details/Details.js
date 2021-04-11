@@ -143,7 +143,6 @@ class Details extends Component {
 
 
     //This Method handles the add item button in the menu list.
-    //After each update a relevant snackbar message is shown.
     itemAddButtonClickHandler = (item) => {
         let cartItems = this.state.cartItems;
         let itemPresentInCart = false;
@@ -183,7 +182,6 @@ class Details extends Component {
     }
 
     //This Method is called when the minus button in the cart is clicked.
-    //After each update a relevant snackbar message is shown.
     minusButtonClickHandler =  (item) => {
         let cartItems = this.state.cartItems;
         let index =  cartItems.indexOf(item);
@@ -214,7 +212,6 @@ class Details extends Component {
     }
 
     //This method is called when the add button in the cart is clicked.
-    //After each update a relevant snackbar message is shown.
     cartAddButtonClickHandler = (item) => {
         let cartItems = this.state.cartItems;
         let index =  cartItems.indexOf(item);

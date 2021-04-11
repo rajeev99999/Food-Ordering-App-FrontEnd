@@ -1,59 +1,159 @@
 import React, { Component } from 'react';
-
-//importing the header component
 import Header from '../../common/header/Header';
 
-//importing material-ui components
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'font-awesome/css/font-awesome.min.css';
+import '@fortawesome/fontawesome-svg-core';
 
-//importing the css file of the Home page
+
 import './Home.css';
 
-const styles = theme => ({
-    restaurantsCard: {
-        width: 300,
-        maxWidth: 300,
-        height: 340,
-        maxHeight: 340,
-        marginTop: 15,
-        marginBottom: 10,
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        paddingBottom: 15,
+const styles = (theme => ({
+    root: {
+        flexGrow: 1,
+        backgroundColor: theme.palette.background.paper
+    },
+
+    grid: { 
+        "padding": "20px",
+        "margin-left": "0.5%",
+        "margin-right": "0.5%",
+        transform: 'translateZ(0)',
         cursor: 'pointer',
+    },
+    gridCard: { 
+        '@media (min-width: 1200px)': { 
+            'flex-grow': '0',
+            'max-width': '25%',
+            'flex-basis': '25%',
+        },
+
+        '@media (min-width: 960px) and (max-width:1200px)': { 
+            'flex-grow': '0',
+            'max-width': '33%',
+            'flex-basis': '33%',
+        },
+    },
+
+    card: { 
+        height: "500px",
+        '@media (min-width: 1300px)': { 
+            height: "500px",
+        },
+        '@media (min-width: 960px) and (max-width:1300px)': {  
+            height: "375px",
+        }
+    },
+
+    media: { 
+        height: "40%",
+        width: "100%",
+        // paddingTop: '56.25%', // 16:9
+    },
+    title: { 
+        "font-size": "25px",
+        '@media (min-width: 1300px)': {
+            "font-size": "40px",
+        },
+        '@media (min-width: 960px) and (max-width:1300px)': {
+            "font-size": "30px",
+        },
+        '@media (max-width: 960px)': {
+            "font-size": "40px",
+        }
+    },
+    categories: { 
+        "font-size": "16px",
+        '@media (min-width: 1300px)': {
+            "font-size": "22px",
+        },
+        '@media (min-width: 960px) and (max-width:1300px)': {
+            "font-size": "20px",
+        },
+        '@media (max-width: 960px)': {
+            "font-size": "22px",
+        }
+    },
+
+
+    cardContent: { 
+        "padding": "10px",
+        "margin-left": "20px",
+        "margin-right": "20px",
+        "height": "20%",
+        "display": "flex",
+        "align-items": "center",
+    },
+    cardActionArea: { 
+        "display": "flex",
+        "height": "100%",
+        "flex-direction": "column",
+        "align-items": "normal",
+        "justify-content": "space-between",
+
     }
-});
+
+}))
 
 class Home extends Component {
-
     constructor() {
-        super();
+        super()
         this.state = {
-            restaurants: [],
-            cards: null,
-            loading: false
+            restaurant: [],
+            isSearchOn: false,
         }
     }
 
+     
     componentDidMount() {
-        this.mounted = true;
-        this.getRestaurants();
-        this.noOfColumns();
-        //when the window is resized calls the noOfColumns method
-        window.addEventListener('resize', this.noOfColumns);
+        let data = null;
+        let xhrRestaurant = new XMLHttpRequest();
+        let that = this;
+        xhrRestaurant.addEventListener("readystatechange", function () {
+            if (xhrRestaurant.readyState === 4 && xhrRestaurant.status === 200) {
+                let restaurant = JSON.parse(xhrRestaurant.responseText)
+                that.setState({
+                    restaurant: restaurant.restaurants
+                });
+            }
+        })
+        xhrRestaurant.open("GET", this.props.baseUrl + "restaurant") 
+        xhrRestaurant.send(data)
     }
 
-    //called before render()
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.noOfColumns);
+
+    updateSearchRestaurant = (searchRestaurant, searchOn) => {
+        let allRestaurantData = [];
+        if (searchOn) {
+            if (!this.state.isSearchOn) {
+                allRestaurantData = this.state.restaurant;
+                this.setState({
+                    restaurant: searchRestaurant,
+                    allRestaurantData: allRestaurantData,
+                    isSearchOn: true,
+                })
+            } else {
+                this.setState({
+                    ...this.state,
+                    restaurant: searchRestaurant,
+                })
+            }
+        } else {
+            allRestaurantData = this.state.allRestaurantData;
+            this.setState({
+                restaurant: allRestaurantData,
+                isSearchOn: false,
+            });
+        }
     }
+
 
     restaurantCardClicked = (restaurantId) => {
         this.props.history.push('/restaurant/' + restaurantId);
@@ -62,146 +162,59 @@ class Home extends Component {
     render() {
         const { classes } = this.props;
         return (
-            this.mounted === true ?
-                <div>
-                    <Header showSearchBox={true} searchHandler={this.searchHandler} baseUrl={this.props.baseUrl} />
-                    {/* if no restaurants found with the entered name displays the No restaurant with the given name. */}
-                    {this.state.restaurants.length === 0 && this.state.loading === false ?
-                        <Typography variant="h6">No restaurant with the given name.</Typography> :
-                        <GridList cols={this.state.cards} cellHeight="auto">
-                            {this.state.restaurants.map(restaurant => (
-                                <GridListTile key={'restaurant' + restaurant.id} >
-                                    {/* restaurant details card onclick redirects to restaurant details page*/}
-                                    < Card className={classes.restaurantsCard} onClick={() => this.restaurantDetails(restaurant.id)}>
-                                        <CardActionArea onClick={() => this.restaurantCardClicked(restaurant.id)}>
-                                            <CardMedia component="img" height={160} image={restaurant.photo_URL} title={restaurant.restaurant_name} />
-                                            <CardContent>
-                                                <div className="restaurant-title-div">
-                                                    <Typography gutterBottom variant='h5' component='h2'>
-                                                        {restaurant.restaurant_name}
-                                                    </Typography>
-                                                </div>
-                                                <div className="restaurant-categories-div">
-                                                    <Typography variant='subtitle1'>
-                                                        {restaurant.categories}
-                                                    </Typography>
-                                                </div>
-                                                <div className="rating-and-avg-div">
-                                                    {/* restaurant rating */}
-                                                    <div className="restaurant-rating-div">
-                                                        <Typography variant='body1'>
-                                                            <i className="fa fa-star"></i> {restaurant.customer_rating} ({restaurant.number_customers_rated})
-                                                </Typography>
-                                                    </div>
-                                                    {/* restaurant average price */}
-                                                    <div className="restaurant-avg-price-div">
-                                                        <Typography variant='body1'>
-                                                            <i className="fa fa-inr" aria-hidden="true"></i>{restaurant.average_price} for two
+            <div>
+                <Header baseUrl={this.props.baseUrl} showHeaderSearchBox={true} updateSearchRestaurant={this.updateSearchRestaurant}></Header>
+                <div className="flex-container">
+                    <Grid container spacing={3} wrap="wrap" alignContent="center" className={classes.grid}>
+                        {this.state.restaurant !== null ? this.state.restaurant.map(restaurant => (
+                            <Grid key={restaurant.id} item xs={12} sm={6} md={3} className={classes.gridCard}>
+                                <Card className={classes.card}>
+                                    <CardActionArea className={classes.cardActionArea} onClick={() => this.restaurantCardClicked(restaurant.id)}>
+                                        <CardMedia
+                                            className={classes.media}
+                                            image={restaurant.photo_URL}
+                                            title={restaurant.restaurant_name}
+                                        />
+                                        <CardContent className={classes.cardContent}>
+                                            <Typography className={classes.title} variant="h5" component="h2">
+                                                {restaurant.restaurant_name}
                                             </Typography>
-                                                    </div>
-                                                </div>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </GridListTile>
-                            ))}
-                        </GridList>
+                                        </CardContent>
+                                        <CardContent className={classes.cardContent}>
+                                            <Typography variant="subtitle1" component="p" className={classes.categories}>
+                                                {restaurant.categories}
+                                            </Typography>
+                                        </CardContent>
+                                        <CardContent className={classes.cardContent}>
+                                            <div className="card-bottom-info">
+                                                <span className="rest-rating">
+                                                    <span>
+                                                        <FontAwesomeIcon icon="star" size="lg" color="white" />
+                                                    </span>
+                                                    <Typography variant="caption" component="p" >{restaurant.customer_rating}</Typography>
+                                                    <Typography variant="caption" component="p" >({restaurant.number_customers_rated})</Typography>
+                                                </span>
+                                                <span className="rest-for-two">
+                                                    <Typography variant="caption" component="p" style={{fontSize: '14px'}}>
+                                                        <i className="fa fa-inr" aria-hidden="true"></i>
+                                                        {restaurant.average_price}
+                                                    </Typography>
+                                                    <Typography variant="caption" component="p" style={{fontSize: '14px'}}>for two</Typography>
+                                                </span>
+                                            </div>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))
+                    :<Typography variant='body1' component='p'>
+                        No restaurant with given name.
+                    </Typography>
                     }
+                    </Grid>
                 </div>
-                : ""
+            </div>
         )
-    }
-
-    //fetches the restaurants from backend
-    getRestaurants = () => {
-        let that = this;
-        let restaurantsData = null;
-        let xhrRestaurants = new XMLHttpRequest();
-        xhrRestaurants.onload = this.setState({ loading: true })
-         xhrRestaurants.addEventListener('readystatechange', function () {
-             if (this.readyState === 4) {
-                 that.setState({
-                     restaurants: JSON.parse(this.responseText).restaurants,
-                     loading: false
-                 });
-             }
-         })
-        // const res = await axios.get(this.props.baseUrl + 'restaurant');
-        // that.setState({
-        //     restaurants: res.restaurants,
-        //     loading: false
-        // });
-        let url = this.props.baseUrl + 'restaurant';
-        xhrRestaurants.open("GET", url);
-        xhrRestaurants.send(restaurantsData);
-    }
-
-    //method updates the no columns according to the window size
-    noOfColumns = () => {
-
-        if (window.innerWidth >= 320 && window.innerWidth <= 600) {
-            this.setState({
-                cards: 1,
-            });
-            return;
-        }
-
-        if (window.innerWidth >= 601 && window.innerWidth <= 1000) {
-            this.setState({
-                cards: 2,
-            });
-            return;
-        }
-
-        if (window.innerWidth >= 1001 && window.innerWidth <= 1270) {
-            this.setState({
-                cards: 3,
-            });
-            return;
-        }
-
-        if (window.innerWidth >= 1271 && window.innerWidth <= 1530) {
-            this.setState({
-                cards: 4,
-            });
-            return;
-        }
-        if (window.innerWidth >= 1530) {
-            this.setState({ cards: 5 });
-            return;
-        }
-    }
-
-    // integrating search box with ui
-    searchHandler = (event) => {
-        let that = this;
-        let filteredRestaurants = null;
-        let xhrFilteredRestaurants = new XMLHttpRequest();
-        xhrFilteredRestaurants.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                if (!JSON.parse(this.responseText).restaurants) {
-                    that.setState({
-                        restaurants: null
-                    });
-                } else {
-                    that.setState({
-                        restaurants: JSON.parse(this.responseText).restaurants
-                    });
-                }
-            }
-        });
-        if (event.target.value === '') {
-            this.getRestaurants();
-        } else {
-            let url = this.props.baseUrl + 'restaurant/name/' + event.target.value;
-            xhrFilteredRestaurants.open("GET", url);
-            xhrFilteredRestaurants.send(filteredRestaurants);
-        }
-    }
-
-    // redirects to restaurant details page with restauranat id
-    restaurantDetails = (restaurantId) => {
-        this.props.history.push('/restaurant/' + restaurantId);
     }
 }
 
