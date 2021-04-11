@@ -681,6 +681,9 @@ class Header extends Component {
             loggedIn: false
         })
         this.onMenuClose();
+        if (that.props.logoutRedirect) {
+            that.props.logoutRedirect();
+        }
     }
 
 }
